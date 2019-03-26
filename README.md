@@ -105,3 +105,87 @@ Run "eject" command
 2. Application State (Data)
 3. Components vs. Containers
 ### -- 145. Planning our App - Layout and Component Tree
+### -- 146. Planning the State
+### -- 147. Setting up the Project
+### -- 148. Creating a Layout Component
+
+> Create a subfolder of src "components" & "containers". Containers are stateful.
+
+*in src/hoc/Aux.js*:   
+= Auxiliary - Higher Order Component 
+```js
+const aux = ( props ) => props.children;
+
+export default aux;
+```
+
+*in src/components/Layout/Layout.js*:   
+= Functional Wrapper Component
+```js
+// import React from 'react';
+import Aux from './../../hoc/Aux';
+
+const layout = ( props ) => (
+    <Aux>
+        <div>Toolbar, SideDrawer, Backdrop</div>
+        <main>
+            {props.children}
+        </main>
+    </Aux>
+);
+
+export default layout;
+```
+
+*in src/App.js* 
+```js
+// import React, { Component } from 'react';
+import Layout from './components/Layout/Layout';
+
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <Layout>
+            <p>Test</p>
+        </Layout>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+### -- 149. Starting implementation of the Burger Builder Container
+> Use styled-components instead of CSS Modules 
+
+1. install package  
+`npm i --save styled-components`  
+2. include in JS
+3. refactor the `main`-tag to a styled-`Main`-component;
+
+*in layout.js:*
+```js
+import styled from 'styled-components';
+
+const Main = styled.main`
+margin-top: 16px;
+`;
+
+const layout = ( props ) => (
+    <Aux>
+        ...
+        <!-- <main> -->
+        <Main>
+            {props.children}
+        </Main>
+        <!-- </main> -->
+    </Aux>
+);
+```
+### -- 150. Adding a Dynamic Ingredient Component
+### -- 151. Adding Prop Type validation
+### -- 152. Starting the Burger Component
+### -- 153. Outputting Burger Ingredients Dynamically
+
+
