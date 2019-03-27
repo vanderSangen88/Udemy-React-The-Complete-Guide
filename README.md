@@ -185,7 +185,53 @@ const layout = ( props ) => (
 ```
 ### -- 150. Adding a Dynamic Ingredient Component
 ### -- 151. Adding Prop Type validation
+. install package  
+`npm i --save prop-types`  
+2. include in JS
+3. convert the functional component to a class-based component
+*in BurgerIngredient.js:*
+```js
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class BurgerIngredient extends Component {
+    render() {
+        ...
+    }
+}
+
+BurgerIngredient.propTypes = {
+    type: PropTypes.string.isRequired
+};
+
+```
 ### -- 152. Starting the Burger Component
 ### -- 153. Outputting Burger Ingredients Dynamically
+```js
+const transformedIngredients = Object.keys( props.ingredients )
+    .map( igKey => {
+        return [...Array( props.ingredients[igKey])].map( (_, i) {
+            return <BurgerIngredient key={igKey + i} type={igKey} />
+        });
+    });
+```
+### -- 154. Calculating the Ingredient Sum Dynamically
+
+> Reduce is an ES6 build-in array function which allows to transform an array into something else
+
+"It takes a function as an input and this function receives two arguments passed in automatically by JavaScript, the previous value and the current value.   
+The reduce method does not only accept these callback here which is executed on every element in thes array we return here, it also accepts an initial value, let's say an empty array. So the initial value of the reduced value. Now of course you want to adjust this reduced value by returning something and it will then loop through all the elements and simply add them to the initial value step by step. So here I want to return the updated values starting with the inital one is then stored in the first argument which we receive in each loop here.   
+So `arr` is always the updated root array which i want to return in the end. So I will symply concat something to that, `concat(el)`, this will simply take the given element through which we're looping and add it to this array."
+
+```js
+const transformedIngredients = Object.keys( props.ingredients )
+    .map( igKey => {
+        ...
+    })
+    .reduce((arr, el) => {
+        return arr.concat(el) 
+    }, []);
+```
+
 
 
