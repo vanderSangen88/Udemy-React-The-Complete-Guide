@@ -393,6 +393,7 @@ To get the date from the store in the "counter"-container, a subscription needs 
             return (
                 <div>
                     <CounterOutput value={this.props.ctr} />
+                    <CounterControl clicked={this.props.onIncrementCounter} />
                 </div>
             )
         }
@@ -413,3 +414,30 @@ Precisely two pieces of information to connect:
 - Which actions should be dispatched
 
 ### -- 284. Dispatching Actions from within the Component
+```js
+// containers/Counter/Counter.js:
+const mapStateToProps = state => { ... };
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onIncrementCounter: () => {
+            return dispatch({
+                type: 'INCREMENT'
+            );
+        }
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Counter);
+
+// store/reducer.js:
+const reducer = (state = initialState, action) => {
+    if (action.type === 'INCREMENT') {
+        return {
+            counter: state.counter + 1
+        };
+    }
+    return state;
+};
+```
+### -- 287. Updating State Immutably
