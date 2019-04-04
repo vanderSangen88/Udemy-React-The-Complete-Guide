@@ -400,7 +400,7 @@ To get the date from the store in the "counter"-container, a subscription needs 
     }
 
     const mapStateToProps = state => {
-        returns {
+        return {
             ctr: state.counter 
         };
     };
@@ -441,3 +441,241 @@ const reducer = (state = initialState, action) => {
 };
 ```
 ### -- 287. Updating State Immutably
+```js
+// store/reducer.js:
+const initialState = {
+    counter: 0,
+    results: []
+};
+
+const reducer = (state = initialState, action) => {
+    switch (action.type) {
+        ...
+        case 'STORE_RESULT':
+            /* 
+                # RETURN THE STATE IMMUTABLE:
+                - Clone the object
+                - Spread the old values
+                - Update the state
+            */
+            return {
+                ...state, // { counter: 0, results: [] }
+                results: state.results.concat({ // *1
+                    id: new Date(),
+                    value: state.counter
+                }) 
+            }
+        // #  NO BREAK NECESSARY 
+    }
+}
+
+// containers/Counter/Counter.js:
+const mapStateToProps = state => {
+    return {
+        ...
+        storedResults = state.results
+    }
+};
+
+class Counter extends Component {
+    render() {
+        return (
+            ...
+            <ul>
+                {this.props.storedResults.map(strResult => (
+                    <li key={strResult.id} 
+                        onClick={this.props.onDeleteResult}
+                    >
+                        {strResult.value}
+                    </li>
+                ))}
+            </ul>
+        )
+    }
+}
+```
+*1: `.push()` manipulates the original value, while `.concat()` returns the old array plus the added argument as a new array. This way the array is updated immutable.
+
+### -- 288. Updating Arrays Immutably
+```js
+// store/reducer.js:
+const reducer = (state = initialState, action) => {
+    switch (action.type) {
+        ...
+        case 'DELETE_RESULT':
+            return {
+                ...state,
+                results: state.results.filter(result => { // *1
+                    return result.id !== action.id
+                }) 
+            }
+    }
+}
+
+// containers/Counter/Counter.js:
+const mapDispatchToProps = dispatch => {
+    return {
+        ...
+        onDeleteResult: (resultID) => dispatch({
+            type: 'DELETE_RESULT',
+            id: resultID // pass it as a payload for the action
+        })
+    }
+};
+
+class Counter extends Component {
+    render() {
+        return (
+            ...
+            <ul>
+                {this.props.storedResults.map(strResult => (
+                    <li key={strResult.id} 
+                        onClick={() => this.props.onDeleteResult(strResult.id)} // wrap in an anonymous function to pass payload
+                    >
+                        {strResult.value}
+                    /li>
+                ))}
+            </ul>
+        )
+    }
+}
+```
+*1: `.splice()` mutates the original array. `.filter()` returns a new array. It takes a function and is executed on each element and adds it to the array when the condition is matched.
+
+### -- 290. Outsourcing Action Types
+```js
+// store/actions.js:
+export const INCREMENT = 'INCREMENT';
+...
+export const STORE_RESULT = 'STORE_RESULT';
+export const DELETE_RESULT = 'DELETE_RESULT';
+
+// store/reducer.js
+import * as actionTypes from './actions';
+
+const reducer = ( state = initialState, action ) => {
+    switch ( action.type ) {
+        case actionTypes.INCREMENT: 
+            return {
+                ...state,
+                counter: state.counter + 1
+            }
+        ...
+        case actionTypes.STORE_RESULT:
+        ...
+        case actionTypes.DELETE_RESULT:
+        ...
+    }
+}
+// containers/Counter/Counter.js:
+import * as actionTypes from './../../store/actions';
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onIncrement: () => dispatch({
+            type: actionTypes.INCREMENT
+        }),
+        ...
+        onStoreResult: () => dispatch({
+            type: actionTypes.STORE_RESULT
+        }),
+        onDeleteResult: (resultID) => dispatch({
+            type: actionTypes.DELETE_RESULT,
+            ...
+        })
+    }
+};
+```
+### -- 291. Combining Multipe Reducers
+Split the reducer into multiple reducers in a "reducers"-folder.
+
+```js
+// in store/reducers/counter.js:
+import * as actionTypes from './../actions';
+
+const initialState = {
+    counter: 0
+};
+
+const reducer = ( state = initialState, action ) => {
+    switch ( action.type ) {
+        case actionTypes.INCREMENT: 
+            return {
+                ...state,
+                counter: state.counter + 1
+            }
+        ... 
+    }
+    return state;
+}
+
+export default reducer;
+
+// in store/reducers/result.js:
+import * as actionTypes from './../actions';
+
+const initialState = {
+    results: []
+};
+
+const reducer = ( state = initialState, action ) => {
+    switch ( action.type ) {
+        ...
+        case actionTypes.STORE_RESULT:
+            return {
+                ...state,
+                results: state.results.concat({
+                    id: new Date(),
+                    value: action.val // VALUE NEEDS TO BE PASSED THROUGH PAYLOAD
+                })
+            }
+        case actionTypes.DELETE_RESULT:
+        ...
+    }
+    return state;
+}
+
+export default reducer;
+
+// in index.js:
+import { createStore, combineReducers } from 'redux'; // ADD HELPER FUNCTION "combineReducers"
+
+// import reducer from './store/reducer'; FILE DELETED
+import counterReducer from './store/reducers/counter';
+import resultReducer from './store/reducers/result';
+
+const rootReducer = combineReducers({
+    counterReducer,
+    resultReducer
+});
+// const store = createStore(reducer);
+const store = createStore(rootReducer);
+
+// in containers/Counter/Counter.js:
+class Counter extends Component {
+    render() {
+        return (
+            ...
+            <button onClick={() => this.props.onStoreResults(this.props.ctr)}>Store Result</button> // WRAP IN AN ANONYMOUS FUNCTION TO PASS DATA
+            ...
+        );
+    }
+}
+
+const mapStateToProps = state => {
+    return {
+        // ctr: state.counter 
+        ctr: state.counterReducer.counter,
+        // storedResults = state.results
+        storedResults = state.resultReducer.results
+    };
+};
+const mapDispatchToProps = dispatch => {
+    return {
+        onStoreResults: (result) => dispatch({
+            type: actionTypes.STORE_RESULTS.
+            val: result
+        })
+    };
+};
+```
