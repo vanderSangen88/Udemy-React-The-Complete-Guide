@@ -679,4 +679,3 @@ const mapDispatchToProps = dispatch => {
     };
 };
 ```
-
