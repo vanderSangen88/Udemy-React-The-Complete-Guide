@@ -1,6 +1,27 @@
 # Udemy-React-The-Complete-Guide
 
-## Section 3: The Basics
+## Section 1: Getting Started
+
+### -- 2. What Is ReactJS?
+>. A JavaScript-library for building user interfaces.
+
+Traditionally, in web apps, you click a link and wait for a new page to load. You click a button and wait for some action to complete.
+`Request <==> HTML Page`
+
+**JavaScript To The Rescue!**
+
+### -- 3. Why React Instead Of "Just JavaScript"?
+
+With just JavaScript you have to write every single step that should be taken. = **An imperative approach**. Doing repetative tasks
+
+Reacts makes building modern, rich, complex userinterfaces easier by giving a higher level syntax where we write in **a declarative way**.
+
+---
+## Section 2: JavaScript Refresher✅
+
+---
+
+## Section 3: React Basics & Working with Components
 
 ### -- Using Create React App
 
@@ -8,7 +29,7 @@
 ```
 npm i -g create-react-app
 ```
-2. Create a React project "reacte-complete-guide".
+2. Create a React project "react-complete-guide".
 ```
 create-react-app react-complete-guide
 ```
@@ -233,7 +254,104 @@ const transformedIngredients = Object.keys( props.ingredients )
     }, []);
 ```
 ---
-## Section 14: Redux
+
+## Section 9: Diving Deeper: Working with Fragments, Portals & Refs
+
+### -- 100. JSX Limitations & Workarounds
+1. You can't return more than one "root" JSX element (you also can't store more than one "root" JSX element in a variable).  
+You can simply solve this problem by wrapping the elements with another element.
+
+2. `<div>` Soup due to the wrapping of previous limitation.  
+
+### -- 101. Creating a Wrapper Component
+Create a Helper-component named "Wrapper":
+
+```js
+export default Wrapper = props => props.children;
+```
+
+This "empty" component simply returns `props.children` which is enough to fulfill the requirements of JSX. It won't render anything but that's not required.
+
+### -- 102. React Fragments
+This "Wrapper"-component comes with React as the "Fragment"-component.
+
+```js
+return (
+<Fragment>
+...
+</Fragment>
+);
+
+// or
+
+return (
+<>
+...
+</>
+);
+```
+
+Depending on your project setup (build workflow), the second syntax is supported.
+
+It's an empty wrapper component: it doesn't render any real HTML element to the DOM. But it fulfills React's/JSX' requirement.
+
+### -- 104. Working with Portals
+
+Portals need 2 things:
+1. The place you want the component to port to
+2. Let the component know it should have a portal to that place
+
+*in component-file.js:*
+```js
+...
+import ReactDOM from 'react-dom';
+
+const Backdrop = props => {
+    return <div class="backdrop" />;
+};
+
+...
+
+const ErrorModal = props => {
+    return (
+        <>
+            {ReactDOM.createPortal(<Backdrop />, document.getElementById('body'))}
+        </>
+    )
+};
+```
+
+### -- 105. Working with "ref"s
+
+Ref's allow us to get access to other DOM-elements and work with them.
+
+```js
+import {useRef} from 'react';
+
+const Function = props => {
+    const nameInputRef = useRef();
+    const ageInputRef = useRef();
+
+    return (
+        <>
+            <input
+                id="username"
+                type="text"
+                ref={nameInputRef}
+            />
+        </>
+    );
+};
+```
+
+
+### -- 106. Controlled vs Uncontrolled Components
+
+These input with the `ref`-attribute are now "Uncontrolled", because the interal state of the value is not controlled by React. It is fetched with a React-feature but it isn't passed date back into it.
+
+
+---
+ ## Section 14: Redux
 > Because State Management Can Be Hard
 ### -- 275. Module Introduction
 A stand alone third party library. Often used in React projects to make state management instead of passing data through query props.
@@ -679,3 +797,23 @@ const mapDispatchToProps = dispatch => {
     };
 };
 ```
+
+---
+
+ ## Section 22: A (Pretty Deep Dive) Introduction to Next.js
+
+ ### -- 297. What is NextJS?
+ > The React Framework for Production
+
+ A framework is bigger then a library, with clear guidance.
+
+ Key features:
+ - Built-in Server-side Rendering (Improved SEO!)
+ - Simplified Routing with File-based Routing
+ - Build Fullstack Apps
+
+
+---
+ ## Section 23: React Summary & Core Feature Walkthrough
+
+ 
